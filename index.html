@@ -252,7 +252,7 @@
     <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
       <div class="flex items-center">
         <img src="https://via.placeholder.com/50" alt="Logo PayrollPro" class="h-10 w-10 mr-3">
-        <span class="text-2xl font-bold gradient-text">PayrollPro</span>
+        <span class="text-2xl font-bold gradient-text">camibio 1</span>
       </div>
       <div class="hidden md:flex space-x-4">
         <a href="#features" class="text-gray-700 hover:text-blue-600 transition duration-300">Características</a>
@@ -1158,9 +1158,9 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           },
           back_urls: {
-            success: window.location.href,
-            failure: window.location.href,
-            pending: window.location.href
+            success: window.location.origin + "/?pago_exitoso=true",
+            failure: window.location.origin + "/?pago_exitoso=false",
+            pending: window.location.origin + "/?pago_exitoso=pending"
           },
           auto_return: 'approved'
         })
@@ -1195,6 +1195,14 @@ document.addEventListener("DOMContentLoaded", function() {
       console.error("Error inicializando el checkout:", error);
     }
   }
+
+  onApprove: async (data) => {
+  console.log("Pago aprobado:", data);
+  // Actualizar estado de la compra a "pagado"
+  await actualizarCompraEstado(compraId, "pagado");
+  // Redirigir a la página principal con un parámetro de éxito
+  window.location.href = "/?pago_exitoso=true";
+},
 
   // Function to check for successful payment and redirect to login
   function checkPaymentSuccess() {
