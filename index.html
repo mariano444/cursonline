@@ -252,7 +252,7 @@
     <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
       <div class="flex items-center">
         <img src="https://via.placeholder.com/50" alt="Logo PayrollPro" class="h-10 w-10 mr-3">
-        <span class="text-2xl font-bold gradient-text">cambio 2</span>
+        <span class="text-2xl font-bold gradient-text">cambio 3</span>
       </div>
       <div class="hidden md:flex space-x-4">
         <a href="#features" class="text-gray-700 hover:text-blue-600 transition duration-300">Características</a>
@@ -1044,6 +1044,7 @@ function generarPassword(longitud = 8) {
 }
 
 
+// Inicialización del cliente de Supabase
 window.supabase = supabase.createClient(
   'https://hygdbhdujdvtuuagwfit.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5Z2RiaGR1amR2dHV1YWd3Zml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg3Nzg3MzUsImV4cCI6MjA1NDM1NDczNX0.jDIZD6cXQHjkojSg_vJ0Q_cvTXVEG_B_NaiRnJZTDas'
@@ -1055,6 +1056,16 @@ document.addEventListener("DOMContentLoaded", function() {
   const submitBtn = document.getElementById("submitBtn");
   const btnText = submitBtn.querySelector(".btn-text");
   let compraId; // Variable para almacenar el ID de la compra
+
+  // Función para generar una contraseña aleatoria
+  function generarPassword(length = 8) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let password = "";
+    for (let i = 0; i < length; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+  }
 
   function nextStep() {
     if (currentStep < 2) {
@@ -1082,7 +1093,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
   async function registrarAlumno(nombre, apellido, celular, email, password) {
     try {
-      // Check if email already exists
+      // Verificar si el email ya existe
       const { data: existingUser, error: checkError } = await supabase
         .from("alumnos")
         .select("email")
@@ -1133,6 +1144,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
+  // Inicialización de MercadoPago
   const mp = new MercadoPago('APP_USR-c879960d-a4ef-42cd-9ce1-2de5b532776f');
 
   async function createPreference(nombre, email, celular) {
@@ -1158,9 +1170,9 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           },
           back_urls: {
-            success: window.location.href,
-            failure: window.location.href,
-            pending: window.location.href
+            success: window.location.origin + "/?pago_exitoso=true",
+            failure: window.location.origin + "/?pago_exitoso=false",
+            pending: window.location.origin + "/?pago_exitoso=pending"
           },
           auto_return: 'approved'
         })
@@ -1196,34 +1208,26 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   }
 
-  onApprove: async (data) => {
-  console.log("Pago aprobado:", data);
-  // Actualizar estado de la compra a "pagado"
-  await actualizarCompraEstado(compraId, "pagado");
-  // Redirigir a la página principal con un parámetro de éxito
-  window.location.href = "/?pago_exitoso=true";
-},
-
-  // Function to check for successful payment and redirect to login
+  // Función para verificar el éxito del pago y redirigir al login
   function checkPaymentSuccess() {
     const urlParams = new URLSearchParams(window.location.search);
     const pagoExitoso = urlParams.get('pago_exitoso');
     
     if (pagoExitoso === 'true') {
-      // Remove the query parameter
+      // Remover el parámetro de la URL
       window.history.replaceState({}, document.title, "/");
       
-      // Show success message
+      // Mostrar mensaje de éxito
       alert("¡Pago exitoso! Serás redirigido al login.");
       
-      // Redirect to login page after a short delay
+      // Redirigir a la página de login después de un corto retraso
       setTimeout(() => {
         window.location.href = "/login.html";
       }, 2000);
     }
   }
 
-  // Call the function when the page loads
+  // Llamada a la función cuando carga la página
   checkPaymentSuccess();
 
   form.addEventListener("submit", async function(event) {
@@ -1248,7 +1252,7 @@ document.addEventListener("DOMContentLoaded", function() {
       btnText.innerHTML = "✅ Paso 2: Pagar";
       submitBtn.style.background = "#28a745";
       
-      // Display the generated password
+      // Mostrar la contraseña generada
       alert(`Tu contraseña generada es: ${password}\nPor favor, guárdala en un lugar seguro.`);
       
       setTimeout(() => {
@@ -1260,7 +1264,7 @@ document.addEventListener("DOMContentLoaded", function() {
       submitBtn.disabled = false;
       btnText.innerHTML = "Continuar al Pago";
       
-      // Display error message if email is already in use
+      // Mostrar mensaje de error si el email ya está en uso
       if (error.message === "El correo electrónico ya está en uso.") {
         alert(error.message);
       }
@@ -1270,6 +1274,7 @@ document.addEventListener("DOMContentLoaded", function() {
   window.prevStep = prevStep;
   window.initializeCheckout = initializeCheckout;
 });
+
 
   </script>
 </body>
